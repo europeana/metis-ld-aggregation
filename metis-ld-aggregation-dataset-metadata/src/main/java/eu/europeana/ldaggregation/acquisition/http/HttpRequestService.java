@@ -2,14 +2,9 @@ package eu.europeana.ldaggregation.acquisition.http;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CookieStore;
@@ -23,7 +18,6 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -33,7 +27,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import eu.europeana.ldaggregation.acquisition.http.UrlRequest.HttpMethod;
@@ -48,7 +41,7 @@ public class HttpRequestService {
 
 	CloseableHttpClient httpClient;
 	CookieStore httpCookieStore;
-	boolean followRedirects=true;
+	boolean followRedirects = true;
 
 //	ArrayList<FetchRequest> requestsQueue=new ArrayList<>(50);
 
@@ -103,8 +96,6 @@ public class HttpRequestService {
 
 	}
 
-	
-	
 	public void close() throws Exception {
 		httpClient.close();
 	}
@@ -128,8 +119,8 @@ public class HttpRequestService {
 				request = new HttpHead(url.getUrl());
 			else if (url.getHttpMethod() == HttpMethod.POST) {
 				request = new HttpPost(url.getUrl());
-				if(url.getRequestContent()!=null) 
-					((HttpPost)request).setEntity(url.getRequestContent());
+				if (url.getRequestContent() != null)
+					((HttpPost) request).setEntity(url.getRequestContent());
 //			    ArrayList<NameValuePair> postParameters;
 //			    postParameters = new ArrayList<NameValuePair>();
 //			    postParameters.add(new BasicNameValuePair("param1", "param1_value"));

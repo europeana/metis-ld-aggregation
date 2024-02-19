@@ -1,10 +1,9 @@
 package eu.europeana.ldaggregation.acquisition.http;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -15,7 +14,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.ContentType;
 
 import eu.europeana.ldaggregation.acquisition.http.UrlRequest.HttpMethod;
-
 
 public class HttpRequest {
 	UrlRequest url;
@@ -31,7 +29,7 @@ public class HttpRequest {
 		super();
 		this.url = new UrlRequest(url);
 	}
-	
+
 	public HttpRequest(UrlRequest url) {
 		super();
 		this.url = url;
@@ -43,8 +41,6 @@ public class HttpRequest {
 //		this.session = session;
 //	}
 
-
-
 //	public HttpRequest(UrlRequest url, CrawlingSession crawlingSession, Throwable error) {
 //		this(url, crawlingSession);
 //		this.error=error;
@@ -53,6 +49,7 @@ public class HttpRequest {
 	public String getUrl() {
 		return url.getUrl();
 	}
+
 	public UrlRequest getUrlRequest() {
 		return url;
 	}
@@ -60,7 +57,7 @@ public class HttpRequest {
 	public HttpMethod getHttpMethod() {
 		return url.getMethod();
 	}
-	
+
 //	public void setUrl(UrlRequest url) {
 //		this.url = url;
 //	}
@@ -72,12 +69,12 @@ public class HttpRequest {
 //	public void setSession(CrawlingSession session) {
 //		this.session = session;
 //	}
-	
-	
+
 	/**
 	 * May be used by another thread to wait for the request to be processed
-	 * @throws IOException 
-	 * @throws UnsupportedOperationException 
+	 * 
+	 * @throws IOException
+	 * @throws UnsupportedOperationException
 	 * 
 	 * @throws InterruptedException
 	 */
@@ -85,7 +82,7 @@ public class HttpRequest {
 //		fetchingSemaphore.acquire();
 //		fetchingSemaphore.release();
 //	}
-	
+
 //	public void fetchReady() {
 //		fetchingSemaphore.release();
 //	}
@@ -96,21 +93,22 @@ public class HttpRequest {
 
 	public void setResponse(CloseableHttpResponse response) throws UnsupportedOperationException, IOException {
 		this.response = response;
-		if(!streaming) {
-			if(response.getEntity()!=null) {
+		if (!streaming) {
+			if (response.getEntity() != null) {
 				byte[] byteArray = IOUtils.toByteArray(response.getEntity().getContent());
 				ContentType contentType = ContentType.get(response.getEntity());
-				this.content=new Content(byteArray, contentType);
+				this.content = new Content(byteArray, contentType);
 			}
 			response.close();
 		}
 	}
-		
+
 //		fetchingSemaphore.release();
 
 	public int getResponseStatusCode() {
 		return response.getStatusLine().getStatusCode();
 	}
+
 	public Content getContent() throws IOException {
 //		byte[] byteArray = IOUtils.toByteArray(response.getEntity().getContent());
 //		ContentType contentType = ContentType.get(response.getEntity());
@@ -128,71 +126,81 @@ public class HttpRequest {
 //	}
 
 	public void addHeaders(HttpMessage request) {
-		for(SimpleImmutableEntry<String, String> header : url.getHeaders()) {
+		for (SimpleImmutableEntry<String, String> header : url.getHeaders()) {
 			request.addHeader(header.getKey(), header.getValue());
 		}
 	}
 
 	public List<Header> getResponseHeaders(String... headerNames) {
-		List<Header> meta=new ArrayList<>(5);
-		if(headerNames==null || headerNames.length==0) {
-			for(Header h : getResponse().getAllHeaders())
-				meta.add(h);			
-		}else {
-			for(String headerName: headerNames) {
-	//			for(String headerName: new String[] { "Content-Type", "Content-Encoding", "Content-Disposition", "Link"/*, "Content-MD5"*/}) {
-				for(Header h : getResponse().getHeaders(headerName))
+		List<Header> meta = new ArrayList<>(5);
+		if (headerNames == null || headerNames.length == 0) {
+			for (Header h : getResponse().getAllHeaders())
+				meta.add(h);
+		} else {
+			for (String headerName : headerNames) {
+				// for(String headerName: new String[] { "Content-Type", "Content-Encoding",
+				// "Content-Disposition", "Link"/*, "Content-MD5"*/}) {
+				for (Header h : getResponse().getHeaders(headerName))
 					meta.add(h);
 			}
 		}
 		return meta;
-	}	
+	}
+
 	public String getResponseHeader(String headerName) {
-		List<Header> meta=new ArrayList<>(5);
-		for(Header h : getResponse().getHeaders(headerName))
+		List<Header> meta = new ArrayList<>(5);
+		for (Header h : getResponse().getHeaders(headerName))
 			return h.getValue();
 		return null;
 	}
 
 	public void redirectUrl(String location) {
-		this.url=new UrlRequest(location);
-		response=null;
-		content=null;
-		error=null;
+		this.url = new UrlRequest(location);
+		response = null;
+		content = null;
+		error = null;
 	}
 
 	public HttpRequest fetch() throws InterruptedException, IOException {
-		streaming=false;
+		streaming = false;
 		HttpRequestService.INSTANCE.fetch(this);
 		return this;
 	}
 
-	
-
 	public String getHeader(String headerToGet) {
 		for (Header h : response.getHeaders(headerToGet)) {
-			if(h.getName().equalsIgnoreCase(headerToGet))
+			if (h.getName().equalsIgnoreCase(headerToGet))
 				return h.getValue();
 		}
 		return null;
 	}
+
 	public String getResponseContentType() {
 		return getHeader("Content-Type");
 	}
+
 	public ContentType getResponseContentTypeParsed() {
 		String header = getHeader("Content-Type");
-		if(header==null)
+		if (header == null)
 			return null;
 		return ContentType.parse(header);
 	}
-	
+
 	public HttpEntity getRequestContent() {
 		return url.getRequestContent();
 	}
 
 	public HttpRequest fetchStream() throws InterruptedException, IOException {
-		streaming=true;
+		streaming = true;
 		HttpRequestService.INSTANCE.fetch(this);
 		return this;
+	}
+
+	public String getContentDispositionFilename() {
+		String contentDisposition = getResponseHeader("Content-Disposition");
+		if (contentDisposition != null && contentDisposition.contains("filename=\""))
+			return contentDisposition.substring(contentDisposition.indexOf("filename=\"") + 10,
+					contentDisposition.length() - 1);
+		return null;
 	}
 }
