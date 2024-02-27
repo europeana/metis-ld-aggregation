@@ -28,9 +28,7 @@ public class Distribution {
 	}
 
 	public String getDownloadUrl() {
-		// TODO: accessUrl should not be used here, but currently it is bein used by
-		// NDE.
-		for (Property downloadUrlProp : new Property[] { DCAT.downloadURL, DCAT.accessURL, RegSchemaorg.contentUrl }) {
+		for (Property downloadUrlProp : new Property[] { DCAT.downloadURL, RegSchemaorg.contentUrl }) {
 			Statement downloadUrlSt = distributionRs.getProperty(downloadUrlProp);
 			if (downloadUrlSt != null) {
 				if (downloadUrlSt.getObject().isURIResource())
