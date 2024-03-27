@@ -1,4 +1,4 @@
-package eu.europeana.ldaggregation.datasetmetadata;
+package eu.europeana.ldaggregation.datasetloader;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -31,10 +31,12 @@ public class Distribution {
 		for (Property downloadUrlProp : new Property[] { DCAT.downloadURL, RegSchemaorg.contentUrl }) {
 			Statement downloadUrlSt = distributionRs.getProperty(downloadUrlProp);
 			if (downloadUrlSt != null) {
-				if (downloadUrlSt.getObject().isURIResource())
+				if (downloadUrlSt.getObject().isURIResource()) {
 					return downloadUrlSt.getObject().asResource().getURI();
-				if (downloadUrlSt.getObject().isLiteral())
+				}
+				if (downloadUrlSt.getObject().isLiteral()) {
 					return downloadUrlSt.getObject().asLiteral().getString();
+				}
 			}
 		}
 		return null;

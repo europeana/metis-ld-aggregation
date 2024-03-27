@@ -1,4 +1,4 @@
-package eu.europeana.ldaggregation.datasetmetadata;
+package eu.europeana.ldaggregation.datasetloader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,18 +31,18 @@ public class DatasetDescription {
 	public DatasetDescription(String datasetUri) throws AccessException, InterruptedException, IOException {
 		this.datasetUri = datasetUri;
 		model = RdfUtil.readRdfFromUri(datasetUri);
-		if (model != null && RdfUtil.contains(datasetUri, model)) {
+		if (model == null) {
+			return;
+		}
+		if (RdfUtil.contains(datasetUri, model)) {
 			loadDistributions();
 			return;
 		}
 		// Search for an RDF resource for a Dataset
-		Set<Resource> dss = new HashSet<Resource>();
-		for (Resource r : model.listResourcesWithProperty(RDF.type, RegSchemaorg.Dataset).toList())
-			dss.add(r);
-		for (Resource r : model.listResourcesWithProperty(RDF.type, RdfReg.DCAT_DATASET).toList())
-			dss.add(r);
-		for (Resource r : model.listResourcesWithProperty(RDF.type, RdfReg.VOID_DATASET).toList())
-			dss.add(r);
+		Set<Resource> dss = new HashSet<>();
+		dss.addAll(model.listResourcesWithProperty(RDF.type, RegSchemaorg.Dataset).toList());
+		dss.addAll(model.listResourcesWithProperty(RDF.type, RdfReg.DCAT_DATASET).toList());
+		dss.addAll(model.listResourcesWithProperty(RDF.type, RdfReg.VOID_DATASET).toList());
 		if (dss.size() == 1) {
 			datasetUri = dss.iterator().next().getURI();
 			loadDistributions();
@@ -64,19 +64,21 @@ public class DatasetDescription {
 	}
 
 	public List<Distribution> getEdmFileBasedDistributions() {
-		List<Distribution> distrs = new ArrayList<Distribution>();
+		List<Distribution> distrs = new ArrayList<>();
 		for (Distribution d : distributions) {
-			if (d.isConformingEdm() && d.getDownloadUrl() != null)
+			if (d.isConformingEdm() && d.getDownloadUrl() != null) {
 				distrs.add(d);
+			}
 		}
 		return distrs;
 	}
 
 	private void loadDistributions() throws AccessException, InterruptedException, IOException {
-		distributions = new ArrayList<Distribution>();
+		distributions = new ArrayList<>();
 		Resource dsResource = model.createResource(datasetUri);
-		if (dsResource == null)
+		if (dsResource == null) {
 			return;
+		}
 
 		StmtIterator distributions = dsResource.listProperties(VOID.dataDump);
 		for (Statement st : distributions.toList()) {

@@ -2,13 +2,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>eu.europeana.metis</groupId>
 	<artifactId>metis-ld-aggregation-dataset-metadata</artifactId>
-	<version>0.0.1</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.jena>4.10.0</version.jena>
+		<version.httpcomponents>4.5.14</version.httpcomponents>
 	</properties>
 
 	<build>
@@ -44,15 +47,21 @@
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-core</artifactId>
-			<version>3.17.0</version>
+			<version>${version.jena}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>3.17.0</version>
+			<version>${version.jena}</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-rdfconnection</artifactId>
+			<version>${version.jena}</version>
+		</dependency>
+
 		<dependency>
 		    <groupId>commons-codec</groupId>
 		    <artifactId>commons-codec</artifactId>
@@ -60,21 +69,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-rdfconnection</artifactId>
-			<version>3.17.0</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.14</version>
+			<version>${version.httpcomponents}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>fluent-hc</artifactId>
-			<version>4.5.14</version>
+			<version>${version.httpcomponents}</version>
 		</dependency>	
 	</dependencies>
 

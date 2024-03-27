@@ -17,7 +17,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.RDFReader;
+import org.apache.jena.rdf.model.RDFReaderI;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -62,8 +62,8 @@ public class RdfUtil {
 		}
 	}
 
-	public static final String CONTENT_TYPES_ACCEPT_HEADER = Lang.RDFXML.getContentType().getContentType() + ", "
-			+ Lang.TURTLE.getContentType().getContentType() + ", " + Lang.JSONLD.getContentType().getContentType();
+	public static final String CONTENT_TYPES_ACCEPT_HEADER = Lang.RDFXML.getContentType().getContentTypeStr() + ", "
+			+ Lang.TURTLE.getContentType().getContentTypeStr() + ", " + Lang.JSONLD.getContentType().getContentTypeStr();
 
 	public static Resource findResource(Resource startResource, Property... propertiesToFollow) {
 		Resource curRes = startResource;
@@ -124,7 +124,7 @@ public class RdfUtil {
 		for (Lang l : new Lang[] { Lang.RDFXML, Lang.TURTLE, Lang.JSONLD }) {
 			try {
 				model = ModelFactory.createDefaultModel();
-				RDFReader reader = model.getReader(l.getName());
+				RDFReaderI reader = model.getReader(l.getName());
 				reader.setProperty("allowBadURIs", "true");
 				reader.read(model, content, null);
 				break;
@@ -141,11 +141,12 @@ public class RdfUtil {
 		for (Lang l : new Lang[] { Lang.RDFXML, Lang.TURTLE, Lang.JSONLD }) {
 			try {
 				model = ModelFactory.createDefaultModel();
-				RDFReader reader = model.getReader(l.getName());
+				RDFReaderI reader = model.getReader(l.getName());
 				reader.setProperty("allowBadURIs", "true");
 				reader.read(model, content, null);
 				break;
 			} catch (Exception e) {
+				e.printStackTrace();
 				// ignore and try another reader
 			}
 		}
@@ -162,7 +163,7 @@ public class RdfUtil {
 		if (l == null)
 			return readRdf(content);
 		Model model = ModelFactory.createDefaultModel();
-		RDFReader reader = model.getReader(l.getName());
+		RDFReaderI reader = model.getReader(l.getName());
 		reader.setProperty("allowBadURIs", "true");
 		reader.read(model, content, null);
 		return model;
@@ -172,7 +173,7 @@ public class RdfUtil {
 		if (l == null)
 			return readRdf(content);
 		Model model = ModelFactory.createDefaultModel();
-		RDFReader reader = model.getReader(l.getName());
+		RDFReaderI reader = model.getReader(l.getName());
 		reader.setProperty("allowBadURIs", "true");
 		reader.read(model, content, null);
 		return model;
@@ -307,14 +308,14 @@ public class RdfUtil {
 
 	public static Model readRdf(HttpResponse rdf) {
 		Model model = readRdf(rdf.body, fromMimeType(rdf.getHeader("Content-Type")));
-		if (model.size() == 0)
+		if (model.isEmpty())
 			return null;
 		return model;
 	}
 
 	public static Model readRdf(HttpResponse rdf, Lang l) {
 		Model model = readRdf(rdf.body, l);
-		if (model.size() == 0)
+		if (model.isEmpty())
 			return null;
 		return model;
 	}
