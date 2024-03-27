@@ -18,13 +18,13 @@ public class DatasetLoader {
    *
    * @param datasetUri        The dataset ID at source
    * @param sparqlEndpointUrl The endpoint URL
-   * @param receiver          The callback for receiving the content.
+   * @param consumer          The callback for receiving the content.
    * @param <E>               The type of the exception thrown by the callback function.
    * @throws E                      In case an issue occurred in the callback function.
    * @throws DatasetLoaderException In case an issue occurred loading the dataset.
    */
   public <E extends Exception> void loadDatasetFromSparqlEndpoint(String datasetUri,
-      String sparqlEndpointUrl, DataReceiver<E> receiver) throws E, DatasetLoaderException {
+      String sparqlEndpointUrl, DataConsumer<E> consumer) throws E, DatasetLoaderException {
     try {
       final DatasetDescription dsDesc = new DatasetDescription(datasetUri, sparqlEndpointUrl);
       for (Distribution dist : dsDesc.getDistributions()) {
@@ -35,7 +35,7 @@ public class DatasetLoader {
             request.fetchStream();
             try (InputStream asStream = request.getContent().asStream()) {
               final Lang rdfLang = RDFLanguages.contentTypeToLang(request.getResponseContentType());
-              receiver.accept(asStream, rdfLang);
+              consumer.accept(asStream, rdfLang);
             }
           }
         }
@@ -48,11 +48,11 @@ public class DatasetLoader {
   }
 
   /**
-   * Implementations of this interface can receive data from an LD service.
+   * Implementations of this interface can consume data from an LD service.
    *
    * @param <E> Exception type to throw.
    */
-  public interface DataReceiver<E extends Exception> {
+  public interface DataConsumer<E extends Exception> {
 
     /**
      * Processes the data.
