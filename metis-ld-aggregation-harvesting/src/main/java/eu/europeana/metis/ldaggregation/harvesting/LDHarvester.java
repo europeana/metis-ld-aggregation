@@ -3,7 +3,6 @@ package eu.europeana.metis.ldaggregation.harvesting;
 import eu.europeana.metis.harvesting.FullRecord;
 import eu.europeana.metis.harvesting.FullRecordHarvestingIterator;
 import eu.europeana.metis.harvesting.HarvesterException;
-import eu.europeana.metis.harvesting.HarvesterIOException;
 import eu.europeana.metis.harvesting.ReportingIteration;
 import eu.europeana.metis.harvesting.ReportingIteration.IterationResult;
 import eu.europeana.metis.ldaggregation.datasetloader.DatasetLoader;
@@ -54,7 +53,7 @@ public class LDHarvester {
           final IterationResult result = action.process(record);
           return result == IterationResult.TERMINATE ? SegmentationResult.TERMINATE
               : SegmentationResult.CONTINUE;
-        } catch (HarvesterIOException e) {
+        } catch (IOException e) {
           throw new HarvesterException(
               "Problem while processing: " + segmentedRecord.getRecordURI(), e);
         }
@@ -81,16 +80,12 @@ public class LDHarvester {
   public record LDRecord (WritableRecord writableRecord) implements FullRecord {
 
     @Override
-    public void writeContent(OutputStream outputStream) throws HarvesterIOException {
-      try {
-        writableRecord.write(outputStream);
-      } catch (IOException e) {
-        throw new HarvesterIOException("Could not write record.", e);
-      }
+    public void writeContent(OutputStream outputStream) throws IOException {
+      writableRecord.write(outputStream);
     }
 
     @Override
-    public InputStream getContent() throws HarvesterIOException {
+    public InputStream getContent() throws IOException {
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       this.writeContent(outputStream);
       return new ByteArrayInputStream(outputStream.toByteArray());

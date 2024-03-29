@@ -2,7 +2,6 @@ package eu.europeana.metis.ldaggregation.harvesting;
 
 import eu.europeana.metis.harvesting.FullRecordHarvestingIterator;
 import eu.europeana.metis.harvesting.HarvesterException;
-import eu.europeana.metis.harvesting.HarvesterIOException;
 import eu.europeana.metis.harvesting.ReportingIteration.IterationResult;
 import eu.europeana.metis.ldaggregation.harvesting.LDHarvester.LDRecord;
 import java.io.IOException;
@@ -29,7 +28,7 @@ public class UsageExample {
           record.writeContent(zos);
           zos.closeEntry();
         } catch (IOException e) {
-          throw new HarvesterIOException("Could not add to zip file.", e);
+          throw new IOException("Could not add to zip file.", e);
         }
         return IterationResult.CONTINUE;
       });
