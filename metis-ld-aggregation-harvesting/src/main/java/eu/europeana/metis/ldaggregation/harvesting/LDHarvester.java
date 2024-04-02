@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Instant;
 import java.util.function.Predicate;
 import org.apache.jena.riot.Lang;
 
@@ -99,6 +100,11 @@ public class LDHarvester {
     @Override
     public String getHarvestingIdentifier() {
       return writableRecord.getRecordURI();
+    }
+
+    @Override
+    public Instant getTimeStamp() {
+      return null;
     }
   }
 }
