@@ -14,11 +14,10 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 
 public class SparqlClient {
-	public static abstract class Handler {
+
+	public interface Handler {
 		// return true to continue to next URI, false to abort
-		public boolean handleSolution(QuerySolution solution) throws Exception {
-			return true;
-		};
+		boolean handleSolution(QuerySolution solution) throws Exception;
 	}
 
 	protected final String baseUrl;
@@ -68,34 +67,31 @@ public class SparqlClient {
 		String fullQuery = queryPrefix + queryString;
 		if (debug)
 			System.out.println(fullQuery);
-		QueryExecution qexec = createQueryExecution(fullQuery);
-		try {
-			ResultSet results = qexec.execSelect();
+    try (QueryExecution qexec = createQueryExecution(fullQuery)) {
+      ResultSet results = qexec.execSelect();
 //            ResultSetFormatter.out(System.out, results, query);
-			while (results.hasNext()) {
-				Resource resource = null;
-				try {
-					QuerySolution hit = results.next();
-					if (!handler.handleSolution(hit)) {
-						if (debug)
-							System.out.println("RECEIVED HANDLER ABORT");
-						break;
-					}
-					wdCount++;
-				} catch (Exception e) {
-					System.err.println("Error on record: " + (resource == null ? "?" : resource.getURI()));
-					e.printStackTrace();
-					System.err.println("PROCEEDING TO NEXT URI");
-				}
-			}
-			if (debug)
-				System.out.printf("QUERY FINISHED - %d resources\n", wdCount);
-		} catch (Exception ex) {
-			System.err.println("Error on query: " + fullQuery);
-			ex.printStackTrace();
-		} finally {
-			qexec.close();
-		}
+      while (results.hasNext()) {
+        Resource resource = null;
+        try {
+          QuerySolution hit = results.next();
+          if (!handler.handleSolution(hit)) {
+            if (debug)
+              System.out.println("RECEIVED HANDLER ABORT");
+            break;
+          }
+          wdCount++;
+        } catch (Exception e) {
+          System.err.println("Error on record: " + (resource == null ? "?" : resource.getURI()));
+          e.printStackTrace();
+          System.err.println("PROCEEDING TO NEXT URI");
+        }
+      }
+      if (debug)
+        System.out.printf("QUERY FINISHED - %d resources\n", wdCount);
+    } catch (Exception ex) {
+      System.err.println("Error on query: " + fullQuery);
+      ex.printStackTrace();
+    }
 		return wdCount;
 	}
 
@@ -164,36 +160,30 @@ public class SparqlClient {
 
 	public void createAllStatementsAboutResource(String resourceUri, Model createInModel) {
 		final Resource subjRes = createInModel.createResource(resourceUri);
-		query("SELECT ?p ?o WHERE {<" + resourceUri + "> ?p ?o}", new Handler() {
-			@Override
-			public boolean handleSolution(QuerySolution solution) throws Exception {
-				Resource pRes = solution.getResource("p");
-				Resource oRes = null;
-				Literal oLit = null;
-				try {
-					oRes = solution.getResource("o");
-				} catch (Exception e) {
-					oLit = solution.getLiteral("o");
-				}
-				createInModel.add(createInModel.createStatement(subjRes, createInModel.createProperty(pRes.getURI()),
-						oRes == null ? oLit : oRes));
-				return true;
-			}
-		});
+		query("SELECT ?p ?o WHERE {<" + resourceUri + "> ?p ?o}", solution -> {
+      Resource pRes = solution.getResource("p");
+      Resource oRes = null;
+      Literal oLit = null;
+      try {
+        oRes = solution.getResource("o");
+      } catch (Exception e) {
+        oLit = solution.getLiteral("o");
+      }
+      createInModel.add(createInModel.createStatement(subjRes, createInModel.createProperty(pRes.getURI()),
+          oRes == null ? oLit : oRes));
+      return true;
+    });
 	}
 
 	public void createAllStatementsReferingResource(String resourceUri, Model createInModel) {
 		final Resource subjRes = createInModel.createResource(resourceUri);
-		query("SELECT ?s ?p WHERE {?s ?p <" + resourceUri + ">}", new Handler() {
-			@Override
-			public boolean handleSolution(QuerySolution solution) throws Exception {
-				Resource pRes = solution.getResource("p");
-				Resource sRes = solution.getResource("s");
-				createInModel
-						.add(createInModel.createStatement(sRes, createInModel.createProperty(pRes.getURI()), subjRes));
-				return true;
-			}
-		});
+		query("SELECT ?s ?p WHERE {?s ?p <" + resourceUri + ">}", solution -> {
+      Resource pRes = solution.getResource("p");
+      Resource sRes = solution.getResource("s");
+      createInModel
+          .add(createInModel.createStatement(sRes, createInModel.createProperty(pRes.getURI()), subjRes));
+      return true;
+    });
 	}
 
 	public Model getAllStatementsAboutAndReferingResource(String resourceUri) {
@@ -211,35 +201,31 @@ public class SparqlClient {
 		String fullQuery = queryPrefix + queryString;
 		if (debug)
 			System.out.println(fullQuery);
-
-		QueryExecution qexec = QueryExecutionFactory.create(fullQuery, mdl);
-		try {
-			ResultSet results = qexec.execSelect();
+    try (QueryExecution qexec = QueryExecutionFactory.create(fullQuery, mdl)) {
+      ResultSet results = qexec.execSelect();
 //            ResultSetFormatter.out(System.out, results, query);
-			while (results.hasNext()) {
-				Resource resource = null;
-				try {
-					QuerySolution hit = results.next();
-					if (!handler.handleSolution(hit)) {
-						if (debug)
-							System.out.println("RECEIVED HANDLER ABORT");
-						break;
-					}
-					wdCount++;
-				} catch (Exception e) {
-					System.err.println("Error on record: " + (resource == null ? "?" : resource.getURI()));
-					e.printStackTrace();
-					System.err.println("PROCEEDING TO NEXT URI");
-				}
-			}
-			if (debug)
-				System.out.printf("QUERY FINISHED - %d resources\n", wdCount);
-		} catch (Exception ex) {
-			System.err.println("Error on query: " + fullQuery);
-			ex.printStackTrace();
-		} finally {
-			qexec.close();
-		}
+      while (results.hasNext()) {
+        Resource resource = null;
+        try {
+          QuerySolution hit = results.next();
+          if (!handler.handleSolution(hit)) {
+            if (debug)
+              System.out.println("RECEIVED HANDLER ABORT");
+            break;
+          }
+          wdCount++;
+        } catch (Exception e) {
+          System.err.println("Error on record: " + (resource == null ? "?" : resource.getURI()));
+          e.printStackTrace();
+          System.err.println("PROCEEDING TO NEXT URI");
+        }
+      }
+      if (debug)
+        System.out.printf("QUERY FINISHED - %d resources\n", wdCount);
+    } catch (Exception ex) {
+      System.err.println("Error on query: " + fullQuery);
+      ex.printStackTrace();
+    }
 		return wdCount;
 	}
 
@@ -248,9 +234,10 @@ public class SparqlClient {
 	}
 
 	public Model describeResource(String datasetUri) {
-		QueryExecution sparqlService = QueryExecutionFactory.sparqlService(this.baseUrl,
-				"DESCRIBE <" + datasetUri + ">");
-		return sparqlService.execDescribe();
+		try (QueryExecution sparqlService = QueryExecution.service(this.baseUrl)
+				.query("DESCRIBE <" + datasetUri + ">").build()) {
+			return sparqlService.execDescribe();
+		}
 //		
 //		final Model model=ModelFactory.createDefaultModel();
 //		
