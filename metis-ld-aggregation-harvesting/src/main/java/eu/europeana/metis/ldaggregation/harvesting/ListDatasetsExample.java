@@ -27,10 +27,19 @@ public class ListDatasetsExample {
         }""";
     AtomicInteger counter = new AtomicInteger();
     client.query(query, solution -> {
-      System.out.println("Result:" + counter.getAndIncrement());
-      solution.varNames().forEachRemaining(varName ->
-          System.out.println("   " + varName + ": " + solution.get(varName)));
+      System.out.println("Dataset: " + solution.get("dataset_title"));
+      System.out.println("  ID: " + solution.get("dataset"));
+      System.out.println("  Created: " + solution.getLiteral("distribution_created").getValue());
+      System.out.println("  Approx. size: " + ((Integer) solution.getLiteral("distribution_size").getValue())/1600);
+      counter.getAndIncrement();
+
+//      System.out.println("Result:" + counter.get());
+//      solution.varNames().forEachRemaining(varName ->
+//          System.out.println("   " + varName + ": " + solution.get(varName)));
+
       return true;
     });
+    System.out.println();
+    System.out.println("Datasets found: " + counter.get());
   }
 }

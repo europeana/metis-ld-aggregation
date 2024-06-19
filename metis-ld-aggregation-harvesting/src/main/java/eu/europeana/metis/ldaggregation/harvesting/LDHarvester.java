@@ -16,10 +16,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.function.Predicate;
 import org.apache.jena.riot.Lang;
 
 public class LDHarvester {
+
+  private static final Lang DEFAULT_LANG = Lang.RDFXML;
 
   public FullRecordHarvestingIterator<LDRecord, LDRecord> harvest(String datasetUri,
       String sparqlEndpointUrl) throws HarvesterException {
@@ -27,10 +30,26 @@ public class LDHarvester {
     try {
       new DatasetLoader().loadDatasetFromSparqlEndpoint(datasetUri, sparqlEndpointUrl,
           (inputStream, dataLanguage) -> {
-            if (!dataLanguage.equals(Lang.RDFXML)) {
-              throw new HarvesterException("Unexpected result language: " + dataLanguage.getLabel());
+           /* if (dataLanguage == null) {
+              byte[] errorContent = new byte[2000];
+              int length;
+              try {
+                length = IOUtils.read(inputStream, errorContent);
+              } catch (Exception e) {
+                throw new HarvesterException("Unexpected error.", e);
+              }
+              throw new HarvesterException("Unexpected error. Content starts with:\n"
+                  + new String(Arrays.copyOf(errorContent, length)));
+            }*/
+            if (dataLanguage == null) {
+              System.out.println("No language could be inferred from the content type. Assuming "
+                  + DEFAULT_LANG.getContentType().getContentTypeStr() + ".");
             }
-            segmenter.addData(inputStream, dataLanguage);
+            final Lang dataLanguageNotNull = Optional.ofNullable(dataLanguage).orElse(DEFAULT_LANG);
+            if (!dataLanguageNotNull.equals(Lang.RDFXML)) {
+              throw new HarvesterException("Unexpected result language: " + dataLanguageNotNull.getLabel());
+            }
+            segmenter.addData(inputStream, dataLanguageNotNull);
           });
     } catch (DatasetLoaderException e) {
       segmenter.close();

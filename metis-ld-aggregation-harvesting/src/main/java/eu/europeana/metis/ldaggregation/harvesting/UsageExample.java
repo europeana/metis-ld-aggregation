@@ -17,10 +17,10 @@ public class UsageExample {
 
 //    final String datasetUri = "https://archief.nl/id/dataset/foto/2-10-62ntfoto";
 //    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-01-07ntfoto";
-//    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-26ntfoto";
+    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-26ntfoto";
 //    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-14-02ntfoto";
 //    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-01-04ntfoto";
-    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-01-05ntfoto";
+//    final String datasetUri = "https://archief.nl/id/dataset/foto/2-24-01-05ntfoto";
 
     final String sparqlEndpointUrl = "https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry";
     final Path downloadFile = Files.createTempFile("edm-dump-download", ".zip");
