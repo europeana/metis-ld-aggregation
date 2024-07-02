@@ -24,23 +24,7 @@ public class UsageExample {
 
     final String sparqlEndpointUrl = "https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry";
     final Path downloadFile = Files.createTempFile("edm-dump-download", ".zip");
-    try (final ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(downloadFile));
-        final FullRecordHarvestingIterator<LDRecord, LDRecord> harvestingIterator = new LDHarvester().harvest(
-            datasetUri, sparqlEndpointUrl)) {
-      System.out.println("Harvesting " + harvestingIterator.countRecords() + " records.");
-      harvestingIterator.forEach(record -> {
-        try {
-          final String fileName = URLEncoder.encode(record.getHarvestingIdentifier());
-          zos.putNextEntry(new ZipEntry(fileName + ".rdf"));
-          record.writeContent(zos);
-          zos.closeEntry();
-        } catch (IOException e) {
-          throw new IOException("Could not add to zip file.", e);
-        }
-        return IterationResult.CONTINUE;
-      });
-      zos.flush();
-    }
-    System.out.println("EDM dump file downloaded to :" + downloadFile);
+
+    HarvestLDFromEndpoint.main(new String[]{sparqlEndpointUrl, datasetUri, downloadFile.toString()});
   }
 }
