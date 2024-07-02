@@ -19,6 +19,7 @@ public class HarvestLDFromEndpoint {
     // Get the input
     if (args.length < 3) {
       System.out.println("Please provide a SPARQL endpoint URL, dataset ID and destination file as parameters.");
+      return;
     }
     final String sparqlEndpoint = args[0];
     final String datasetId = args[1];
