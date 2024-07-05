@@ -15,8 +15,16 @@ Functionality is accessible through a so-called main class (i.e. a Java class wi
 in it). To execute any such functionality the syntax is as follows (on unix systems): 
 ```
 java \
-    -cp "[JAR FILE NAME]:[LIB DIRECTORY NAME]/*" \
+    -cp "[PATH TO JAR FILE]:[PATH TO LIB DIRECTORY]/*" \
     [FULLY QUALIFIED CLASS NAME OF MAIN CLASS] \
+    [ADDITIONAL PARAMETERS FOR SPECIFIC MAIN CLASS]
+```
+Or, the equivalent on Windows systems (where the line break escape character and the class path 
+separator differ):
+```
+java ^
+    -cp "[JAR FILE LOCATION];[LIB DIRECTORY LOCATION]/*" ^
+    [FULLY QUALIFIED CLASS NAME OF MAIN CLASS] ^
     [ADDITIONAL PARAMETERS FOR SPECIFIC MAIN CLASS]
 ```
 
@@ -40,3 +48,13 @@ java \
     https://archief.nl/id/dataset/foto/2-10-62ntfoto \
     ~/2-10-62ntfoto.zip
 ```
+Or, the equivalent on Windows systems:
+```
+java ^
+    -cp "metis-ld-aggregation-harvesting-1.0-SNAPSHOT.jar;metis-ld-aggregation-harvesting-1.0-SNAPSHOT.lib/*" ^
+    eu.europeana.metis.ldaggregation.harvesting.HarvestLDFromEndpoint ^
+    https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry ^
+    https://archief.nl/id/dataset/foto/2-10-62ntfoto ^
+    C:\Users\User\Documents\2-10-62ntfoto.zip
+```
+
