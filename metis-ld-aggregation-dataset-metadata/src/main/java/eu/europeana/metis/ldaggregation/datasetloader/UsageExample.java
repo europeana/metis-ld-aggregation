@@ -9,8 +9,8 @@ public class UsageExample {
 	public static void main(String[] args) throws Exception {
 		final String datasetUri = "https://archief.nl/id/dataset/foto/2-10-62ntfoto";
 		final String sparqlEndpointUrl = "https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry";
-		new DatasetLoader().loadDatasetFromSparqlEndpoint(datasetUri, sparqlEndpointUrl,
-				((inputStream, dataLanguage) -> {
+		new DatasetLoader().loadDataset(datasetUri, sparqlEndpointUrl,
+				((inputStream, dataLanguage, packageFormat, compressFormat) -> {
 					final Path downloadFile = Files.createTempFile("edm-dump-download",
 							"." + dataLanguage.getFileExtensions().get(0));
 					Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);

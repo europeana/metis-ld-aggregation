@@ -7,6 +7,8 @@ import eu.europeana.metis.harvesting.ReportingIteration;
 import eu.europeana.metis.harvesting.ReportingIteration.IterationResult;
 import eu.europeana.metis.ldaggregation.datasetloader.DatasetLoader;
 import eu.europeana.metis.ldaggregation.datasetloader.DatasetLoaderException;
+import eu.europeana.metis.ldaggregation.harvesting.dumpfile.DumpFile;
+import eu.europeana.metis.ldaggregation.harvesting.dumpfile.DumpFileConsumer.DumpFileResult;
 import eu.europeana.metis.ldaggregation.segmenter.EdmRecordSegmenter;
 import eu.europeana.metis.ldaggregation.segmenter.EdmRecordSegmenter.RecordConsumer.SegmentationResult;
 import eu.europeana.metis.ldaggregation.segmenter.EdmRecordSegmenter.WritableRecord;
@@ -22,38 +24,28 @@ import org.apache.jena.riot.Lang;
 
 public class LDHarvester {
 
-  private static final Lang DEFAULT_LANG = Lang.RDFXML;
 
   public FullRecordHarvestingIterator<LDRecord, LDRecord> harvest(String datasetUri,
       String sparqlEndpointUrl) throws HarvesterException {
     final EdmRecordSegmenter segmenter = new EdmRecordSegmenter();
     try {
-      new DatasetLoader().loadDatasetFromSparqlEndpoint(datasetUri, sparqlEndpointUrl,
-          (inputStream, dataLanguage) -> {
-           /* if (dataLanguage == null) {
-              byte[] errorContent = new byte[2000];
-              int length;
-              try {
-                length = IOUtils.read(inputStream, errorContent);
-              } catch (Exception e) {
-                throw new HarvesterException("Unexpected error.", e);
-              }
-              throw new HarvesterException("Unexpected error. Content starts with:\n"
-                  + new String(Arrays.copyOf(errorContent, length)));
-            }*/
-            if (dataLanguage == null) {
-              System.out.println("No language could be inferred from the content type. Assuming "
-                  + DEFAULT_LANG.getContentType().getContentTypeStr() + ".");
+      new DatasetLoader().loadDataset(datasetUri, sparqlEndpointUrl,
+          (rawInputStream, dataLanguage, packageFormat, compressFormat) -> {
+            try {
+              DumpFile dumpFile = DumpFile.fromDistribution(rawInputStream, dataLanguage, packageFormat, compressFormat);
+              dumpFile.processFiles(rdfInputStream -> {
+                segmenter.addData(rdfInputStream, dataLanguage);
+                return DumpFileResult.CONTINUE;
+              });
+            } catch (Exception e) {
+              throw new DatasetLoaderException(String
+                  .format("Issue occurred while attempting to harvest dataset: %s from server: %s",
+                      datasetUri, sparqlEndpointUrl), e);
             }
-            final Lang dataLanguageNotNull = Optional.ofNullable(dataLanguage).orElse(DEFAULT_LANG);
-            if (!dataLanguageNotNull.equals(Lang.RDFXML)) {
-              throw new HarvesterException("Unexpected result language: " + dataLanguageNotNull.getLabel());
-            }
-            segmenter.addData(inputStream, dataLanguageNotNull);
           });
     } catch (DatasetLoaderException e) {
       segmenter.close();
-      throw new HarvesterException("Could not load the data from the Sparql endpoint.", e);
+      throw new HarvesterException("Could not load the data from the distribution.", e);
     }
     return new LDHarvestingIterator(segmenter);
   }

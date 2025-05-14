@@ -66,7 +66,7 @@ public class DatasetDescription {
 	public List<Distribution> getEdmFileBasedDistributions() {
 		List<Distribution> distrs = new ArrayList<>();
 		for (Distribution d : distributions) {
-			if (d.isConformingEdm() && d.getDownloadUrl() != null) {
+			if (d.isConformingEdm() && !d.getDownloadUrls().isEmpty()) {
 				distrs.add(d);
 			}
 		}
