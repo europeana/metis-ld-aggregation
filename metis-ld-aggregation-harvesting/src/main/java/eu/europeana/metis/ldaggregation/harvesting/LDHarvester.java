@@ -1,5 +1,13 @@
 package eu.europeana.metis.ldaggregation.harvesting;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.Instant;
+import java.util.function.Predicate;
+
 import eu.europeana.metis.harvesting.FullRecord;
 import eu.europeana.metis.harvesting.FullRecordHarvestingIterator;
 import eu.europeana.metis.harvesting.HarvesterException;
@@ -12,35 +20,27 @@ import eu.europeana.metis.ldaggregation.harvesting.dumpfile.DumpFileConsumer.Dum
 import eu.europeana.metis.ldaggregation.segmenter.EdmRecordSegmenter;
 import eu.europeana.metis.ldaggregation.segmenter.EdmRecordSegmenter.RecordConsumer.SegmentationResult;
 import eu.europeana.metis.ldaggregation.segmenter.EdmRecordSegmenter.WritableRecord;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.time.Instant;
-import java.util.Optional;
-import java.util.function.Predicate;
-import org.apache.jena.riot.Lang;
 
 public class LDHarvester {
 
-
-  public FullRecordHarvestingIterator<LDRecord, LDRecord> harvest(String datasetUri,
-      String sparqlEndpointUrl) throws HarvesterException {
+  public FullRecordHarvestingIterator<LDRecord, LDRecord> harvest(String datasetUri, String sparqlEndpointUrl)
+      throws HarvesterException {
     final EdmRecordSegmenter segmenter = new EdmRecordSegmenter();
     try {
       new DatasetLoader().loadDataset(datasetUri, sparqlEndpointUrl,
           (rawInputStream, dataLanguage, packageFormat, compressFormat) -> {
             try {
-              DumpFile dumpFile = DumpFile.fromDistribution(rawInputStream, dataLanguage, packageFormat, compressFormat);
+              DumpFile dumpFile = DumpFile.fromDistribution(rawInputStream, dataLanguage, packageFormat,
+                  compressFormat);
               dumpFile.processFiles(rdfInputStream -> {
                 segmenter.addData(rdfInputStream, dataLanguage);
                 return DumpFileResult.CONTINUE;
               });
             } catch (Exception e) {
-              throw new DatasetLoaderException(String
-                  .format("Issue occurred while attempting to harvest dataset: %s from server: %s",
-                      datasetUri, sparqlEndpointUrl), e);
+              throw new DatasetLoaderException(
+                  String.format("Issue occurred while attempting to harvest dataset: %s from server: %s", datasetUri,
+                      sparqlEndpointUrl),
+                  e);
             }
           });
     } catch (DatasetLoaderException e) {
@@ -63,18 +63,15 @@ public class LDHarvester {
             return SegmentationResult.TERMINATE;
           }
           final IterationResult result = action.process(record);
-          return result == IterationResult.TERMINATE ? SegmentationResult.TERMINATE
-              : SegmentationResult.CONTINUE;
+          return result == IterationResult.TERMINATE ? SegmentationResult.TERMINATE : SegmentationResult.CONTINUE;
         } catch (IOException e) {
-          throw new HarvesterException(
-              "Problem while processing: " + segmentedRecord.getRecordURI(), e);
+          throw new HarvesterException("Problem while processing: " + segmentedRecord.getRecordURI(), e);
         }
       });
     }
 
     @Override
-    public void forEachNonDeleted(ReportingIteration<LDRecord> reportingIteration)
-        throws HarvesterException {
+    public void forEachNonDeleted(ReportingIteration<LDRecord> reportingIteration) throws HarvesterException {
       forEach(reportingIteration);
     }
 
@@ -89,7 +86,7 @@ public class LDHarvester {
     }
   }
 
-  public record LDRecord (WritableRecord writableRecord) implements FullRecord {
+  public record LDRecord(WritableRecord writableRecord) implements FullRecord {
 
     @Override
     public void writeContent(OutputStream outputStream) throws IOException {

@@ -9,6 +9,7 @@ package eu.europeana.metis.ldaggregation.datasetloader;
  * @author Nuno Freire
  * @since 09/04/2025
  */
+@SuppressWarnings("serial")
 public class UnsupportedMimeTypeException extends Exception {
 
   public UnsupportedMimeTypeException() {

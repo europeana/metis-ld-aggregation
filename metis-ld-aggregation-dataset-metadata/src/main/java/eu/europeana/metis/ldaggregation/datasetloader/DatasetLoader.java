@@ -1,18 +1,16 @@
 package eu.europeana.metis.ldaggregation.datasetloader;
 
-import eu.europeana.metis.ldaggregation.acquisition.http.AccessException;
-import eu.europeana.metis.ldaggregation.acquisition.http.HttpRequest;
-import eu.europeana.metis.ldaggregation.acquisition.http.HttpUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.sparql.vocabulary.DOAP;
+
+import eu.europeana.metis.ldaggregation.acquisition.http.AccessException;
+import eu.europeana.metis.ldaggregation.acquisition.http.HttpRequest;
+import eu.europeana.metis.ldaggregation.acquisition.http.HttpUtil;
 
 /**
  * This class loads dataset content from remote resources.

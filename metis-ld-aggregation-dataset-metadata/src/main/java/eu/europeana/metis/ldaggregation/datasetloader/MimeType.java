@@ -4,6 +4,8 @@
 package eu.europeana.metis.ldaggregation.datasetloader;
 
 /**
+ * Media types supported for data dump files and their mime types and URIs in two vocabularies that may be used in DCAT-AP metadata.
+ * 
  * @author Nuno Freire
  * @since 10/04/2025
  */

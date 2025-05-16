@@ -1,6 +1,5 @@
 package eu.europeana.metis.ldaggregation.acquisition.http;
 
-import eu.europeana.metis.ldaggregation.acquisition.http.UrlRequest.HttpMethod;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ import org.apache.http.HttpMessage;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.ContentType;
+
+import eu.europeana.metis.ldaggregation.acquisition.http.UrlRequest.HttpMethod;
 
 public class HttpRequest {
 	UrlRequest url;

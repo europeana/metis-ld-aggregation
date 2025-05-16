@@ -27,16 +27,16 @@ public class TarDumpFile extends DumpFile {
   public <E extends Exception> void processFiles(DumpFileConsumer<E> consumer) throws E, IOException {
     try (BufferedInputStream inputStream = new BufferedInputStream(rawInputStream);
         TarArchiveInputStream tar = new TarArchiveInputStream(inputStream)) {
-          ArchiveEntry entry; 
-          while ((entry = tar.getNextEntry()) != null) {
-            if(!entry.isDirectory()) {
-              byte[] byteArray = IOUtils.toByteArray(tar);
-              try(ByteArrayInputStream fileIs=new ByteArrayInputStream(byteArray)){
-                consumer.accept(fileIs);
-              }
-            }
+      ArchiveEntry entry;
+      while ((entry = tar.getNextEntry()) != null) {
+        if (!entry.isDirectory()) {
+          byte[] byteArray = IOUtils.toByteArray(tar);
+          try (ByteArrayInputStream fileIs = new ByteArrayInputStream(byteArray)) {
+            consumer.accept(fileIs);
           }
+        }
       }
+    }
   }
 
 }
