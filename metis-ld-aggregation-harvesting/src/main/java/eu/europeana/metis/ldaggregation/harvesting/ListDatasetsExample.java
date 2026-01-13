@@ -1,17 +1,17 @@
 package eu.europeana.metis.ldaggregation.harvesting;
 
-import eu.europeana.metis.ldaggregation.acquisition.rdf.SparqlClient;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import eu.europeana.metis.ldaggregation.acquisition.rdf.SparqlClient;
 
 public class ListDatasetsExample {
 
   public static void main(String[] args) {
 
     final SparqlClient client = new SparqlClient("https://triplestore.netwerkdigitaalerfgoed.nl/repositories/registry",
-        Map.of("dcat", "http://www.w3.org/ns/dcat#",
-            "dct", "http://purl.org/dc/terms/",
-            "foaf", "http://xmlns.com/foaf/0.1/"));
+        Map.of("dcat", "http://www.w3.org/ns/dcat#", "dct", "http://purl.org/dc/terms/", "foaf",
+            "http://xmlns.com/foaf/0.1/"));
     final String query = """
         SELECT * WHERE {
             ?dataset dct:title ?dataset_title ;
@@ -30,7 +30,7 @@ public class ListDatasetsExample {
       System.out.println("Dataset: " + solution.get("dataset_title"));
       System.out.println("  ID: " + solution.get("dataset"));
       System.out.println("  Created: " + solution.getLiteral("distribution_created").getValue());
-      System.out.println("  Approx. size: " + ((Integer) solution.getLiteral("distribution_size").getValue())/1600);
+      System.out.println("  Approx. size: " + ((Integer) solution.getLiteral("distribution_size").getValue()) / 1600);
       counter.getAndIncrement();
 
 //      System.out.println("Result:" + counter.get());

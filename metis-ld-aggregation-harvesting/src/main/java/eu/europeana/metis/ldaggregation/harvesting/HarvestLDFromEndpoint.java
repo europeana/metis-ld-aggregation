@@ -1,9 +1,5 @@
 package eu.europeana.metis.ldaggregation.harvesting;
 
-import eu.europeana.metis.harvesting.FullRecordHarvestingIterator;
-import eu.europeana.metis.harvesting.HarvesterException;
-import eu.europeana.metis.harvesting.ReportingIteration.IterationResult;
-import eu.europeana.metis.ldaggregation.harvesting.LDHarvester.LDRecord;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -11,6 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import eu.europeana.metis.harvesting.FullRecordHarvestingIterator;
+import eu.europeana.metis.harvesting.HarvesterException;
+import eu.europeana.metis.harvesting.ReportingIteration.IterationResult;
+import eu.europeana.metis.ldaggregation.harvesting.LDHarvester.LDRecord;
 
 public class HarvestLDFromEndpoint {
 
@@ -31,8 +32,8 @@ public class HarvestLDFromEndpoint {
 
     // Actual processing
     try (final ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(outputFile));
-        final FullRecordHarvestingIterator<LDRecord, LDRecord> harvestingIterator = new LDHarvester().harvest(
-            datasetId, sparqlEndpoint)) {
+        final FullRecordHarvestingIterator<LDRecord, LDRecord> harvestingIterator = new LDHarvester().harvest(datasetId,
+            sparqlEndpoint)) {
       System.out.println("... Harvesting " + harvestingIterator.countRecords() + " records.");
       harvestingIterator.forEach(record -> {
         try {

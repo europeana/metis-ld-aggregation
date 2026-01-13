@@ -1,6 +1,5 @@
 package eu.europeana.metis.ldaggregation.acquisition.http;
 
-import eu.europeana.metis.ldaggregation.acquisition.http.UrlRequest.HttpMethod;
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -10,6 +9,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.Header;
+
+import eu.europeana.metis.ldaggregation.acquisition.http.UrlRequest.HttpMethod;
 
 public class HttpUtil {
 

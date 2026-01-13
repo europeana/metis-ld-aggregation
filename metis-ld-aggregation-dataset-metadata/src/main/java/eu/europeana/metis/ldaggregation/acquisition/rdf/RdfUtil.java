@@ -1,9 +1,5 @@
 package eu.europeana.metis.ldaggregation.acquisition.rdf;
 
-import eu.europeana.metis.ldaggregation.acquisition.http.AccessException;
-import eu.europeana.metis.ldaggregation.acquisition.http.HttpRequest;
-import eu.europeana.metis.ldaggregation.acquisition.http.HttpResponse;
-import eu.europeana.metis.ldaggregation.acquisition.http.HttpUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +24,11 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
+
+import eu.europeana.metis.ldaggregation.acquisition.http.AccessException;
+import eu.europeana.metis.ldaggregation.acquisition.http.HttpRequest;
+import eu.europeana.metis.ldaggregation.acquisition.http.HttpResponse;
+import eu.europeana.metis.ldaggregation.acquisition.http.HttpUtil;
 
 public class RdfUtil {
 	public static class Jena {

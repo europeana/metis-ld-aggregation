@@ -5,6 +5,8 @@ package eu.europeana.metis.ldaggregation.datasetloader;
  */
 public class DatasetLoaderException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   public DatasetLoaderException(String message) {
     super(message);
   }
